@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}403 – Unauthorized Access{% endblock %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
+    <div>
+        <h1 style="font-size: 6rem; font-weight: 900; color: var(--danger); line-height: 1;">403</h1>
+        <h2 style="font-size: 1.75rem; margin: 1rem 0 0.5rem;">Access Forbidden</h2>
+        <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 2rem;">
+            You do not possess the required role permissions or your candidate session has expired.
+        </p>
+        <a href="/" class="btn btn-primary btn-lg"><i class="fas fa-home"></i> Return to Homepage</a>
+    </div>
+</div>
+{% endblock %}
+

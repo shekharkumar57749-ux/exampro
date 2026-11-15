@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamPro – {{ exam.title }}</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/examination.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="exam-body">
+
+<div class="exam-container">
+    <!-- Examination Header Bar -->
+    <header class="exam-header">
+        <div class="exam-header-left">
+            <span class="brand-icon" style="width:36px; height:36px; background:linear-gradient(135deg, var(--primary), var(--secondary)); color:#fff; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-graduation-cap"></i>
+            </span>
+            <div class="exam-title-badge">
+                <h2>{{ exam.title }}</h2>
+                <div class="candidate-tag">
+                    <i class="fas fa-user-circle"></i> Candidate: <b>{{ session.get('full_name') }}</b> ({{ attempt.student_code }})
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <!-- Auto-save Status Badge -->
+            <div id="autosave-status" class="autosave-status">
+                <span class="dot"></span> Cloud Synced
+            </div>
+
+            <!-- Countdown Timer -->
+            <div id="timer-wrapper" class="exam-timer-wrapper">
+                <i class="fas fa-stopwatch"></i>
+                <span id="timer-digits" class="timer-digits">00:00</span>
+            </div>
+
+            <!-- Fullscreen Button -->
+            <button id="btn-fullscreen" class="btn btn-secondary btn-sm" title="Toggle Fullscreen">
+                <i class="fas fa-expand"></i> Fullscreen
+            </button>
+        </div>
+    </header>
+
+    <!-- Examination Progress Bar -->
+    <div class="exam-progress-bar-container">
+        <div id="exam-progress-fill" class="exam-progress-bar-fill"></div>
+    </div>
+
+    <!-- Examination Two-Column Workspace -->
+    <main class="exam-workspace">
+        <!-- Left: Main Question Stage -->
+        <section class="question-stage">
+            <div class="question-stage-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span id="q-number-display" class="question-number-pill">Question 1</span>
+                    <span id="q-total-display" style="font-size: 0.85rem; color: var(--text-muted);">of {{ questions|length }}</span>
+                    <span id="q-type-badge" class="badge badge-primary">MCQ</span>
+                </div>
+                <div class="question-marks-badge">
+                    <span id="q-marks-display" class="badge badge-success">+1.0 Marks</span>
+                    <span id="q-negative-display" class="badge badge-danger">No Negative</span>
+                </div>
+            </div>
+
+            <div class="question-content">
+                <div id="q-text-display" class="question-text">
+                    Loading question content...
+                </div>
+
+                <!-- Optional Image Container -->
+                <div id="q-image-container" style="display: none;"></div>
+
+                <!-- Options / Input Area -->
+                <div id="q-options-container" class="options-container"></div>
+            </div>
+
+            <!-- Bottom Examination Action Toolbar -->
+            <footer class="exam-toolbar">
+                <div class="toolbar-left">
+                    <button id="btn-prev" class="btn btn-secondary">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <button id="btn-next" class="btn btn-primary">
+                        Next Question <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="toolbar-right">
+                    <button id="btn-clear" class="btn btn-secondary" title="Clear current answer choice">
+                        <i class="fas fa-eraser"></i> Clear Answer
+                    </button>
+                    <button id="btn-review" class="btn btn-secondary" title="Mark for later review">
+                        <i class="far fa-bookmark"></i> Mark for Review
+                    </button>
+                    <button id="btn-submit-exam" class="btn btn-success" style="font-weight: 700;">
+                        <i class="fas fa-check-circle"></i> Submit Exam
+                    </button>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Right: Question Palette / Navigator Panel -->
+        <aside class="question-palette-panel">
+            <h3 class="palette-title"><i class="fas fa-th" style="color:var(--primary); margin-right:6px;"></i> Question Palette</h3>
+
+            <!-- Color Code Legend -->
+            <div class="palette-legend">
+                <div class="legend-item"><span class="legend-dot not-visited"></span> Not Visited</div>
+                <div class="legend-item"><span class="legend-dot unanswered"></span> Unanswered</div>
+                <div class="legend-item"><span class="legend-dot answered"></span> Answered</div>
+                <div class="legend-item"><span class="legend-dot review"></span> Marked for Review</div>
+                <div class="legend-item"><span class="legend-dot current"></span> Current</div>
+            </div>
+
+            <!-- Palette Grid Buttons -->
+            <div id="palette-grid" class="palette-grid">
+                {% for q in questions %}
+                    {% set state = palette_states.get(q.id, 'not-visited') %}
+                    <button class="palette-btn {{ state }} {% if loop.first %}current{% endif %}" data-qid="{{ q.id }}" onclick="window.engine.renderQuestion({{ loop.index0 }})">
+                        {{ loop.index }}
+                    </button>
+                {% endfor %}
+            </div>
+
+            <!-- Real-time Palette Summary Counts -->
+            <div class="palette-summary">
+                <div class="palette-summary-row">
+                    <span>Answered:</span>
+                    <b id="summary-answered" style="color:#10b981;">0</b>
+                </div>
+                <div class="palette-summary-row">
+                    <span>Unanswered:</span>
+                    <b id="summary-unanswered" style="color:#ef4444;">0</b>
+                </div>
+                <div class="palette-summary-row">
+                    <span>Marked for Review:</span>
+                    <b id="summary-review" style="color:#f59e0b;">0</b>
+                </div>
+                <div class="palette-summary-row">
+                    <span>Not Visited:</span>
+                    <b id="summary-not-visited">{{ questions|length }}</b>
+                </div>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div id="submit-confirm-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-size: 1.25rem;"><i class="fas fa-check-double" style="color:var(--primary); margin-right:8px;"></i> Final Submission Confirmation</h3>
+            <button class="alert-close" onclick="closeModal('submit-confirm-modal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 1.05rem; margin-bottom: 1rem;">
+                Are you ready to submit your examination? Once submitted, answers are permanently locked and cannot be edited.
+            </p>
+            <div style="background: var(--warning-light); border-left: 4px solid var(--warning); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; color: #92400e; font-size: 0.95rem;">
+                <i class="fas fa-exclamation-triangle"></i> You have <b id="modal-unanswered-count">0</b> unanswered questions.
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Your test will be evaluated instantly and a verified scorecard generated.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('submit-confirm-modal')">Go Back & Review</button>
+            <button type="button" class="btn btn-success" onclick="window.engine.executeSubmit(false)">Submit Anyway</button>
+        </div>
+    </div>
+</div>
+
+<!-- Anti-Cheat Security Violation Alert Modal -->
+<div id="security-alert-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 460px;">
+        <div class="modal-body security-alert-box">
+            <div class="security-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 style="font-size: 1.35rem; color: var(--danger); margin-bottom: 0.5rem;">Security Violation Alert</h3>
+            <p id="security-warning-desc" style="font-size: 0.95rem; margin-bottom: 1rem;">
+                Window blur or tab switch detected.
+            </p>
+            <div style="padding: 0.75rem; background: var(--bg-hover); border-radius: var(--radius-md); font-size: 0.85rem; margin-bottom: 1.25rem;">
+                Violation Warning: <b id="security-warning-count" style="color: var(--danger);">1 / 3</b>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                Exiting fullscreen or navigating away from the examination window is recorded in the proctoring security logs.
+            </p>
+            <button type="button" class="btn btn-primary" onclick="closeModal('security-alert-modal')">
+                Acknowledge & Resume Exam
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/examination.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize Examination Engine with backend parameters
+        window.engine = new ExaminationEngine({
+            attemptId: {{ attempt.id }},
+            examId: {{ exam.id }},
+            questions: {{ questions | tojson | safe }},
+            answersMap: {{ answers_map | tojson | safe }},
+            remainingSeconds: {{ remaining_seconds }}
+        });
+    });
+</script>
+</body>
+</html>
+

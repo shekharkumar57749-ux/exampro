@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environment & secrets
+.env
+.env.local
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Local database instances & executables
+ngrok.exe
+start_exampro.bat
+*.sqlite
+*.log
+
+# IDE & OS files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini

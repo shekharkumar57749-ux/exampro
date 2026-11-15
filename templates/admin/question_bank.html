@@ -1,0 +1,121 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Question Bank Repository – Admin Center{% endblock %}
+{% block nav_question_bank %}active{% endblock %}
+
+{% block admin_content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+    <div>
+        <h2 style="font-size:1.75rem; font-weight:800;">Question Bank Master Repository</h2>
+        <p style="color:var(--text-muted);">Manage institution-wide question items, taxonomies, and difficulty tiers</p>
+    </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="card" style="margin-bottom:1.5rem; padding:1.25rem;">
+    <form method="GET" action="{{ url_for('admin.question_bank') }}" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
+        <div>
+            <label class="form-label">Subject</label>
+            <select name="subject_id" class="form-control">
+                <option value="all">All Subjects</option>
+                {% for s in subjects %}
+                    <option value="{{ s.id }}" {% if selected_subject == s.id|string %}selected{% endif %}>{{ s.subject_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label">Difficulty</label>
+            <select name="difficulty" class="form-control">
+                <option value="all">All Difficulties</option>
+                <option value="easy" {% if selected_difficulty == 'easy' %}selected{% endif %}>Easy</option>
+                <option value="medium" {% if selected_difficulty == 'medium' %}selected{% endif %}>Medium</option>
+                <option value="hard" {% if selected_difficulty == 'hard' %}selected{% endif %}>Hard</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label">Format</label>
+            <select name="qtype" class="form-control">
+                <option value="all">All Formats</option>
+                <option value="single_choice" {% if selected_type == 'single_choice' %}selected{% endif %}>Single Choice MCQ</option>
+                <option value="multiple_choice" {% if selected_type == 'multiple_choice' %}selected{% endif %}>Multiple Choice</option>
+                <option value="true_false" {% if selected_type == 'true_false' %}selected{% endif %}>True / False</option>
+                <option value="fill_blank" {% if selected_type == 'fill_blank' %}selected{% endif %}>Fill in Blanks</option>
+                <option value="descriptive" {% if selected_type == 'descriptive' %}selected{% endif %}>Descriptive</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label">Search</label>
+            <input type="text" name="search" class="form-control" placeholder="Search questions..." value="{{ search_query or '' }}" />
+        </div>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button type="submit" class="btn btn-primary" style="flex:1;"><i class="fas fa-filter"></i> Filter</button>
+            <a href="{{ url_for('admin.question_bank') }}" class="btn btn-secondary"><i class="fas fa-undo"></i></a>
+        </div>
+    </form>
+</div>
+
+<!-- Questions Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-database" style="color:var(--primary); margin-right:8px;"></i> Master Items ({{ questions|length }})</h3>
+    </div>
+
+    {% if questions %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px;">#</th>
+                        <th>Question Text</th>
+                        <th>Subject / Topic</th>
+                        <th>Format</th>
+                        <th>Difficulty</th>
+                        <th>Marks</th>
+                        <th>Author</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in questions %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td style="max-width:380px;">
+                                <div style="font-weight:600;">{{ q.question_text }}</div>
+                                {% if q.explanation %}
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">
+                                        <i>Exp: {{ q.explanation[:70] }}...</i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <b>{{ q.subject_name }}</b>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">{{ q.topic }}</div>
+                            </td>
+                            <td><span class="badge badge-secondary">{{ q.question_type.replace('_', ' ') }}</span></td>
+                            <td>
+                                {% if q.difficulty == 'easy' %}
+                                    <span class="badge badge-success">Easy</span>
+                                {% elif q.difficulty == 'medium' %}
+                                    <span class="badge badge-warning">Medium</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Hard</span>
+                                {% endif %}
+                            </td>
+                            <td><b>+{{ q.marks }}</b> / -{{ q.negative_marks }}</td>
+                            <td>{{ q.author_name or 'System' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align:center; padding:3rem; color:var(--text-muted);">
+            <p>No questions found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

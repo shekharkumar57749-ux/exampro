@@ -1,0 +1,82 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Institution Analytics – ExamPro{% endblock %}
+{% block nav_analytics %}active{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom:2rem;">
+    <h2 style="font-size:1.75rem; font-weight:800;">Institutional Performance Analytics</h2>
+    <p style="color:var(--text-muted);">Macro-level academic diagnostics, pass rate distribution, and exam cohort metrics</p>
+</div>
+
+<!-- Charts Grid -->
+<div class="charts-grid">
+    <div class="chart-card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-bar" style="color:var(--primary); margin-right:8px;"></i> Overall Grade Breakdown</h3>
+            <span class="badge badge-primary">Institutional Scale</span>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-admin-grades"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-pie" style="color:var(--success); margin-right:8px;"></i> Aggregate Pass / Fail Rate</h3>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-admin-pass-fail"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Examination Participation & Difficulty Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-chart-line" style="color:var(--secondary); margin-right:8px;"></i> Course & Examination Performance Index</h3>
+    </div>
+
+    {% if analytics.exam_stats %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Examination Title</th>
+                        <th>Subject</th>
+                        <th>Attempts Taken</th>
+                        <th>Pass Count</th>
+                        <th>Average Score</th>
+                        <th>Average Accuracy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for es in analytics.exam_stats %}
+                        <tr>
+                            <td style="font-weight:700;">{{ es.title }}</td>
+                            <td>{{ es.subject_name }}</td>
+                            <td><b>{{ es.attempts_count }}</b></td>
+                            <td><span class="badge badge-success">{{ es.pass_count }} Passed</span></td>
+                            <td><b>{{ es.avg_score }}%</b></td>
+                            <td>{{ es.avg_accuracy }}%</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align:center; padding:2rem; color:var(--text-muted);">No examination data available for index calculation.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const data = {{ analytics | tojson | safe }};
+        AnalyticsEngine.initAdminCharts(data);
+    });
+</script>
+{% endblock %}
+

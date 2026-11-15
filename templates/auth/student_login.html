@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Student Login – ExamPro{% endblock %}
+
+{% block content %}
+<div style="min-height: 100vh; display: flex; flex-direction: column; background: var(--bg-body);">
+    <!-- Header Minimal -->
+    <header style="padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="/" class="brand-logo">
+            <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+        </a>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <button class="theme-toggle-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+            <a href="/" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </header>
+
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
+        <div class="card" style="max-width: 460px; width: 100%; padding: 2.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.35rem;">Student Login</h2>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Access your examinations, results, and certificates</p>
+            </div>
+
+            <!-- Demo Hint -->
+            <div style="margin-bottom: 1.5rem; padding: 0.75rem; background: var(--bg-hover); border-radius: var(--radius-md); font-size: 0.8rem; border-left: 3px solid var(--primary);">
+                <b>Demo Student:</b> <code>student@exampro.com</code> or <code>STU-1001</code><br>
+                <b>Password:</b> <code>Student@123</code>
+            </div>
+
+            <form action="{{ url_for('auth.student_login') }}" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="identifier">Email Address or Student ID</label>
+                    <div style="position: relative;">
+                        <input type="text" id="identifier" name="identifier" class="form-control" placeholder="e.g. student@exampro.com or STU-1001" required autofocus />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                        <label class="form-label" for="password" style="margin-bottom: 0;">Password</label>
+                        <a href="javascript:void(0)" onclick="showToast('For demo, use Student@123', 'info')" style="font-size: 0.8rem; color: var(--primary);">Forgot Password?</a>
+                    </div>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required />
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <label class="form-check" style="font-size: 0.85rem; color: var(--text-muted);">
+                        <input type="checkbox" name="remember" />
+                        <span>Remember my device</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem;">
+                    <i class="fas fa-sign-in-alt"></i> Sign In to Student Portal
+                </button>
+            </form>
+
+            <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.875rem;">
+                Don't have an account yet? <a href="{{ url_for('auth.register') }}" style="font-weight: 600;">Register Now</a>
+            </div>
+
+            <div style="margin-top: 1rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: center; gap: 1.25rem;">
+                <a href="{{ url_for('auth.teacher_login') }}"><i class="fas fa-chalkboard-teacher"></i> Teacher Login</a>
+                <span>•</span>
+                <a href="{{ url_for('auth.admin_login') }}"><i class="fas fa-user-shield"></i> Admin Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

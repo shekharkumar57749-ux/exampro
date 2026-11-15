@@ -1,0 +1,148 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Performance Analytics – ExamPro{% endblock %}
+{% block nav_analytics %}active{% endblock %}
+
+{% block student_content %}
+<div style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.75rem; font-weight: 800;">Academic Performance Analytics</h2>
+    <p style="color: var(--text-muted);">In-depth diagnostics across examinations, subject mastery, and cognitive topic areas</p>
+</div>
+
+<!-- Summary Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Overall Average</div>
+            <div class="stat-value" style="color:var(--primary);">{{ analytics.summary.average_percentage }}%</div>
+            <div class="stat-sub">Across {{ analytics.summary.exams_completed }} exams</div>
+        </div>
+        <div class="stat-icon primary"><i class="fas fa-percent"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Peak Score</div>
+            <div class="stat-value" style="color:var(--success);">{{ analytics.summary.best_score }}%</div>
+            <div class="stat-sub">Personal best attempt</div>
+        </div>
+        <div class="stat-icon success"><i class="fas fa-trophy"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Aggregate Accuracy</div>
+            <div class="stat-value" style="color:var(--secondary);">{{ analytics.summary.overall_accuracy }}%</div>
+            <div class="stat-sub">{{ analytics.summary.total_correct }} correct / {{ analytics.summary.total_correct + analytics.summary.total_incorrect }} answered</div>
+        </div>
+        <div class="stat-icon indigo"><i class="fas fa-bullseye"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Avg Time / Exam</div>
+            <div class="stat-value">{{ (analytics.summary.avg_time_seconds // 60) }}m</div>
+            <div class="stat-sub">{{ analytics.summary.avg_time_seconds % 60 }} seconds remainder</div>
+        </div>
+        <div class="stat-icon warning"><i class="fas fa-stopwatch"></i></div>
+    </div>
+</div>
+
+<!-- Interactive Chart.js Graphs -->
+<div class="charts-grid">
+    <!-- Performance Over Time -->
+    <div class="chart-card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-line" style="color:var(--primary); margin-right:8px;"></i> Score Trend Over Time</h3>
+            <span class="badge badge-primary">Historical Progression</span>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-student-timeline"></canvas>
+        </div>
+    </div>
+
+    <!-- Question Types Breakdown -->
+    <div class="chart-card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-pie" style="color:var(--secondary); margin-right:8px;"></i> Question Types</h3>
+            <span class="badge badge-secondary">Distribution</span>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart-student-types"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-book" style="color:var(--primary); margin-right:8px;"></i> Subject-Wise Mastery</h3>
+    </div>
+    <div class="chart-container" style="height: 280px;">
+        <canvas id="chart-student-subjects"></canvas>
+    </div>
+</div>
+
+<!-- Strengths and Weak Areas Diagnostics -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <!-- Strong Areas -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title" style="color:var(--success);"><i class="fas fa-check-circle"></i> Strong Subject Topics</h3>
+            <span class="badge badge-success">&ge; 70% Accuracy</span>
+        </div>
+        {% if analytics.strong_areas %}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for topic in analytics.strong_areas %}
+                    <div style="padding: 0.85rem; border-radius: var(--radius-md); background: var(--success-light); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; color: #065f46;">{{ topic.topic }}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ topic.subject_name }}</div>
+                        </div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: var(--success);">
+                            {{ topic.accuracy }}%
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0;">Complete more test attempts to identify your strongest subjects.</p>
+        {% endif %}
+    </div>
+
+    <!-- Weak Areas -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title" style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> Topics Needing Improvement</h3>
+            <span class="badge badge-danger">&lt; 70% Accuracy</span>
+        </div>
+        {% if analytics.weak_areas %}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for topic in analytics.weak_areas %}
+                    <div style="padding: 0.85rem; border-radius: var(--radius-md); background: var(--danger-light); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; color: #991b1b;">{{ topic.topic }}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ topic.subject_name }}</div>
+                        </div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: var(--danger);">
+                            {{ topic.accuracy }}%
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0;">No weak topics detected. Keep up your stellar performance!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const data = {{ analytics | tojson | safe }};
+        AnalyticsEngine.initStudentCharts(data);
+    });
+</script>
+{% endblock %}
+

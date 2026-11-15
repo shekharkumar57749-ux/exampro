@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-layout">
+    <!-- Student Sidebar -->
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('student.dashboard') }}" class="sidebar-brand">
+                <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+                <span>Exam<span style="color:var(--primary)">Pro</span></span>
+            </a>
+            <button class="sidebar-collapse-btn" title="Collapse Sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-role-pill">
+            <i class="fas fa-user-graduate"></i>
+            <span>Student Workspace</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{{ url_for('student.dashboard') }}" class="sidebar-link {% block nav_dashboard %}{% endblock %}">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('student.exams') }}" class="sidebar-link {% block nav_exams %}{% endblock %}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>My Exams</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('student.results') }}" class="sidebar-link {% block nav_results %}{% endblock %}">
+                    <i class="fas fa-poll"></i>
+                    <span>Results & Scores</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('student.analytics') }}" class="sidebar-link {% block nav_analytics %}{% endblock %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Performance</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('student.certificates') }}" class="sidebar-link {% block nav_certificates %}{% endblock %}">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certificates</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('student.profile') }}" class="sidebar-link {% block nav_profile %}{% endblock %}">
+                    <i class="fas fa-user-circle"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('student.settings') }}" class="sidebar-link {% block nav_settings %}{% endblock %}">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="user-mini-card">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ user_name }}</div>
+                    <div class="user-role-label">Student ID: {{ session.get('student_id', 'STU-1001') }}</div>
+                </div>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="sidebar-link" style="margin-top:0.5rem; color:#ef4444;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sign Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Stage -->
+    <div class="app-main">
+        <!-- Topbar -->
+        <header class="app-topbar">
+            <div class="topbar-left">
+                <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+                <div class="topbar-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search exams, subjects, scores..." />
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle-btn" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <!-- Notifications Bell -->
+                <div class="notification-wrapper">
+                    <button class="icon-btn notification-bell-btn" title="Notifications">
+                        <i class="far fa-bell"></i>
+                        <span class="icon-badge notification-badge" style="{% if not unread_notifications_count %}display:none;{% endif %}">{{ unread_notifications_count }}</span>
+                    </button>
+                    <div class="notification-dropdown">
+                        <div class="notif-header">
+                            <h4>Notifications</h4>
+                            <button onclick="markAllNotificationsRead()" class="btn btn-sm btn-outline" style="font-size:0.75rem;">Mark all read</button>
+                        </div>
+                        <ul class="notif-list">
+                            <li style="padding:1rem; text-align:center; color:var(--text-muted);">Loading notifications...</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- User Dropdown Menu -->
+                <div class="user-menu-wrapper">
+                    <button class="user-menu-btn">
+                        <div class="user-avatar" style="width:34px; height:34px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span style="font-size:0.875rem; font-weight:600; color:var(--text-main);">{{ user_name }}</span>
+                        <i class="fas fa-chevron-down" style="font-size:0.75rem; color:var(--text-muted);"></i>
+                    </button>
+                    <div class="user-dropdown">
+                        <a href="{{ url_for('student.profile') }}"><i class="fas fa-user-edit"></i> Edit Profile</a>
+                        <a href="{{ url_for('student.settings') }}"><i class="fas fa-cog"></i> Account Settings</a>
+                        <div style="height:1px; background:var(--border); margin:0.35rem 0;"></div>
+                        <a href="{{ url_for('auth.logout') }}" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Page Body -->
+        <main class="app-content">
+            {% block student_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,164 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Examination Scorecard – {{ result.exam_title }}{% endblock %}
+{% block nav_results %}active{% endblock %}
+
+{% block student_content %}
+<!-- Breadcrumb -->
+<div style="margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--text-muted);">
+    <a href="{{ url_for('student.results') }}">Results</a> &gt; <span>Scorecard: {{ result.exam_title }}</span>
+</div>
+
+<!-- Result Hero Card -->
+<div class="card" style="margin-bottom: 2rem; padding: 2.5rem; text-align: center; background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-hover) 100%);">
+    <span class="badge {% if result.status == 'pass' %}badge-success{% else %}badge-danger{% endif %}" style="font-size: 0.85rem; padding: 0.4rem 1rem; margin-bottom: 1.25rem;">
+        {% if result.status == 'pass' %}<i class="fas fa-check-circle"></i> EXAMINATION CLEARED (GRADE {{ result.grade }}){% else %}<i class="fas fa-times-circle"></i> DID NOT MEET PASS CRITERIA (GRADE {{ result.grade }}){% endif %}
+    </span>
+
+    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">{{ result.exam_title }}</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">Subject: <b>{{ result.subject_name }}</b> | Candidate: <b>{{ result.student_name }}</b> ({{ result.student_code }})</p>
+
+    <!-- Circular Score Indicator -->
+    <div style="width: 170px; height: 170px; border-radius: 50%; border: 8px solid {% if result.status == 'pass' %}var(--success){% else %}var(--danger){% endif %}; margin: 0 auto 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-card); box-shadow: var(--shadow-lg);">
+        <div style="font-size: 2.5rem; font-weight: 900; line-height: 1; color: var(--text-main);">
+            {{ result.percentage }}%
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem; font-weight: 600;">
+            {{ result.score }} / {{ result.total_marks }}
+        </div>
+    </div>
+
+    <p style="font-style: italic; max-width: 600px; margin: 0 auto 1.75rem; color: var(--text-main); font-size: 1rem;">
+        "{{ result.feedback }}"
+    </p>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{{ url_for('result.download_result_pdf', result_id=result.id) }}" class="btn btn-primary">
+            <i class="fas fa-file-pdf"></i> Download Official Scorecard (PDF)
+        </a>
+        {% if result.certificate_code %}
+            <a href="{{ url_for('result.download_certificate', result_id=result.id) }}" class="btn btn-success">
+                <i class="fas fa-certificate"></i> Download Certificate (PDF)
+            </a>
+            <a href="{{ url_for('result.verify_certificate', certificate_code=result.certificate_code) }}" target="_blank" class="btn btn-secondary">
+                <i class="fas fa-external-link-alt"></i> Public Verification Page
+            </a>
+        {% endif %}
+        <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline">
+            <i class="fas fa-home"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Performance Metrics Grid -->
+<div class="stats-grid" style="margin-bottom: 2.5rem;">
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Correct Answers</div>
+            <div class="stat-value" style="color:var(--success);">{{ result.correct_count }}</div>
+            <div class="stat-sub">Full marks awarded</div>
+        </div>
+        <div class="stat-icon success"><i class="fas fa-check"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Incorrect Answers</div>
+            <div class="stat-value" style="color:var(--danger);">{{ result.incorrect_count }}</div>
+            <div class="stat-sub">Negative marks applied</div>
+        </div>
+        <div class="stat-icon danger"><i class="fas fa-times"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Skipped Questions</div>
+            <div class="stat-value" style="color:var(--warning);">{{ result.skipped_count }}</div>
+            <div class="stat-sub">Zero mark penalty</div>
+        </div>
+        <div class="stat-icon warning"><i class="fas fa-minus"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Accuracy Rate</div>
+            <div class="stat-value" style="color:var(--primary);">{{ result.accuracy }}%</div>
+            <div class="stat-sub">Time taken: {{ (result.time_taken_seconds // 60) }}m {{ (result.time_taken_seconds % 60) }}s</div>
+        </div>
+        <div class="stat-icon primary"><i class="fas fa-bullseye"></i></div>
+    </div>
+</div>
+
+<!-- Question-by-Question Detailed Review -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-tasks" style="color:var(--primary); margin-right:8px;"></i> Comprehensive Question Review</h3>
+        <span class="badge badge-primary">{{ questions|length }} Questions Evaluated</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {% for q in questions %}
+            <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; background: var(--bg-hover);">
+                <!-- Question Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-weight: 800; color: var(--primary);">Question {{ loop.index }}</span>
+                        <span class="badge badge-secondary">{{ q.question_type.replace('_', ' ').upper() }}</span>
+                        <span class="badge badge-secondary">Topic: {{ q.topic }}</span>
+                    </div>
+                    <div>
+                        {% if not q.is_answered %}
+                            <span class="badge badge-warning"><i class="fas fa-minus"></i> Skipped (0.0 Marks)</span>
+                        {% elif q.is_correct %}
+                            <span class="badge badge-success"><i class="fas fa-check"></i> Correct (+{{ q.marks_awarded }} Marks)</span>
+                        {% else %}
+                            <span class="badge badge-danger"><i class="fas fa-times"></i> Incorrect ({{ q.marks_awarded }} Marks)</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Question Text -->
+                <p style="font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin-bottom: 1.25rem;">
+                    {{ q.question_text }}
+                </p>
+
+                <!-- Options / Answers Display -->
+                {% if q.options and q.question_type in ('single_choice', 'multiple_choice', 'true_false') %}
+                    <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem;">
+                        {% for opt in q.options %}
+                            {% set is_selected = opt.id|string in q.selected_set %}
+                            <div style="padding: 0.65rem 1rem; border-radius: var(--radius-sm); border: 1.5px solid {% if opt.is_correct %}var(--success){% elif is_selected %}var(--danger){% else %}var(--border){% endif %}; background: {% if opt.is_correct %}var(--success-light){% elif is_selected %}var(--danger-light){% else %}var(--bg-card){% endif %}; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-weight: 600;">{{ opt.option_text }}</span>
+                                    {% if is_selected %}
+                                        <span class="badge {% if opt.is_correct %}badge-success{% else %}badge-danger{% endif %}" style="margin-left: 8px;">Your Selection</span>
+                                    {% endif %}
+                                </div>
+                                {% if opt.is_correct %}
+                                    <span style="color: var(--success); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-check-circle"></i> Correct Answer</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% elif q.question_type in ('fill_blank', 'descriptive') %}
+                    <div style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 1.25rem;">
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Your Submitted Response:</div>
+                        <p style="font-family: var(--font-mono); font-size: 0.95rem; color: var(--text-main); font-weight: 600;">
+                            {{ q.text_answer or 'No answer entered' }}
+                        </p>
+                    </div>
+                {% endif %}
+
+                <!-- Explanation Box -->
+                {% if q.explanation %}
+                    <div style="background: var(--bg-card); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border-left: 3px solid var(--primary); font-size: 0.875rem;">
+                        <b style="color: var(--primary);"><i class="fas fa-lightbulb"></i> Explanation:</b> {{ q.explanation }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

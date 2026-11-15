@@ -1,0 +1,116 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}My Profile – ExamPro{% endblock %}
+{% block nav_profile %}active{% endblock %}
+
+{% block student_content %}
+<div style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.75rem; font-weight: 800;">Student Academic Profile</h2>
+    <p style="color: var(--text-muted);">View and manage your personal, contact, and enrollment information</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 320px 1fr; gap: 2rem;">
+    <!-- Profile Card Summary -->
+    <div class="card" style="text-align: center; padding: 2rem;">
+        <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; font-size: 2.5rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; box-shadow: var(--shadow-md);">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <h3 style="font-size: 1.35rem; margin-bottom: 0.25rem;">{{ profile.full_name }}</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Student ID: <b>{{ profile.student_id }}</b></p>
+        <span class="badge badge-success"><i class="fas fa-check-circle"></i> Active Candidate</span>
+
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); text-align: left; font-size: 0.85rem;">
+            <div style="margin-bottom: 0.5rem;"><b>Course:</b> {{ profile.course }}</div>
+            <div style="margin-bottom: 0.5rem;"><b>College:</b> {{ profile.college }}</div>
+            <div style="margin-bottom: 0.5rem;"><b>Semester:</b> Semester {{ profile.semester }}</div>
+            <div><b>Academic CGPA:</b> <span style="color:var(--primary); font-weight:700;">{{ profile.cgpa }}</span></div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="card" style="padding: 2rem;">
+        <h3 class="card-title" style="margin-bottom: 1.5rem;"><i class="fas fa-edit" style="color:var(--primary); margin-right:8px;"></i> Update Information</h3>
+
+        <form id="profile-update-form" onsubmit="handleProfileUpdate(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label" for="full_name">Full Legal Name</label>
+                    <input type="text" id="full_name" name="full_name" class="form-control" value="{{ profile.full_name }}" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="student_id">Student ID (Read-only)</label>
+                    <input type="text" id="student_id" class="form-control" value="{{ profile.student_id }}" disabled />
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label" for="email">Institutional Email</label>
+                    <input type="email" id="email" class="form-control" value="{{ profile.email }}" disabled />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" value="{{ profile.phone or '' }}" placeholder="+91 98765 43210" />
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label" for="course">Program / Course</label>
+                    <input type="text" id="course" name="course" class="form-control" value="{{ profile.course }}" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="college">Institution / College</label>
+                    <input type="text" id="college" name="college" class="form-control" value="{{ profile.college }}" required />
+                </div>
+            </div>
+
+            <div class="form-group" style="max-width: 200px;">
+                <label class="form-label" for="semester">Current Semester</label>
+                <input type="number" id="semester" name="semester" class="form-control" min="1" max="10" value="{{ profile.semester }}" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-save"></i> Save Profile Changes
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function handleProfileUpdate(e) {
+        e.preventDefault();
+        const form = document.getElementById('profile-update-form');
+        const data = {
+            full_name: document.getElementById('full_name').value,
+            phone: document.getElementById('phone').value,
+            course: document.getElementById('course').value,
+            college: document.getElementById('college').value,
+            semester: document.getElementById('semester').value
+        };
+
+        try {
+            const res = await fetch('/api/profile/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (result.success) {
+                showToast('Profile updated successfully!', 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(result.error || 'Failed to update profile.', 'danger');
+            }
+        } catch (err) {
+            showToast('Network error saving profile.', 'danger');
+        }
+    }
+</script>
+{% endblock %}
+

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Help Center & Contact – ExamPro{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="container site-nav">
+        <a href="/" class="brand-logo">
+            <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+        </a>
+        <div class="nav-actions">
+            <button class="theme-toggle-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+            <a href="/" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </div>
+</header>
+
+<main style="padding: 4rem 0;">
+    <div class="container" style="max-width: 680px;">
+        <div class="card" style="padding: 2.5rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Academic Help Desk</span>
+                <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Contact Support</h1>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Have questions about proctoring, examination scheduling, or credential verification?</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); showToast('Your inquiry has been sent to the examination controller.', 'success'); this.reset();">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" placeholder="Aman Sharma" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" placeholder="student@college.edu" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-control">
+                        <option>Examination Scheduling Inquiry</option>
+                        <option>Certificate Verification Support</option>
+                        <option>Proctoring Technical Assistance</option>
+                        <option>Account Access & Password Reset</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Message Details</label>
+                    <textarea class="form-control" style="min-height: 120px;" placeholder="Describe your question or technical challenge..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
+                    <i class="fas fa-paper-plane"></i> Submit Inquiry
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}
+

@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+
+{% block title %}ExamPro – Advanced Examination Management System{% endblock %}
+
+{% block content %}
+<!-- Public Navigation Bar -->
+<header class="site-header">
+    <div class="container site-nav">
+        <a href="/" class="brand-logo">
+            <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/" class="active">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#roles">Portals</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <button class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+            {% if user_logged_in %}
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>
+                {% elif user_role == 'teacher' %}
+                    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-primary"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                {% else %}
+                    <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary"><i class="fas fa-user-graduate"></i> Student Dashboard</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('auth.student_login') }}" class="btn btn-outline">Log In</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- Hero Section -->
+    <section class="hero-section" style="padding: 5rem 0 4rem; background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-body) 100%); border-bottom: 1px solid var(--border);">
+        <div class="container" style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3.5rem; align-items: center;">
+            <div class="hero-content">
+                <span class="badge badge-primary" style="margin-bottom: 1rem; padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+                    <i class="fas fa-shield-alt"></i> Enterprise-Grade Assessment System
+                </span>
+                <h1 style="font-size: 3.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.5rem; letter-spacing: -0.02em;">
+                    Smarter Exams.<br><span style="color: var(--primary);">Better Performance.</span>
+                </h1>
+                <p style="font-size: 1.15rem; line-height: 1.6; margin-bottom: 2rem; color: var(--text-muted); max-width: 540px;">
+                    An advanced digital examination platform designed for secure online assessments, intelligent analytics, automated evaluation, and better academic learning outcomes.
+                </p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="{{ url_for('auth.student_login') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-play"></i> Start an Exam
+                    </a>
+                    <a href="#features" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-compass"></i> Explore Features
+                    </a>
+                </div>
+                <!-- Demo login credentials pill -->
+                <div style="margin-top: 2rem; padding: 0.85rem 1rem; background: var(--primary-light); border-radius: var(--radius-md); border: 1px solid rgba(37, 99, 235, 0.2); font-size: 0.825rem; color: var(--primary);">
+                    <i class="fas fa-key"></i> <b>Instant Demo Access:</b> Student: <code>student@exampro.com</code> | Teacher: <code>teacher@exampro.com</code> | Admin: <code>admin@exampro.com</code> (Passwords: <code>Student@123</code> / <code>Teacher@123</code> / <code>Admin@123</code>)
+                </div>
+            </div>
+
+            <!-- Hero Illustration Card -->
+            <div class="hero-illustration">
+                <div class="card" style="border-radius: var(--radius-lg); padding: 1.75rem; border: 1.5px solid var(--border); box-shadow: var(--shadow-xl); background: var(--bg-card); position: relative;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></span>
+                            <span style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></span>
+                            <span style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></span>
+                        </div>
+                        <span class="badge badge-success"><i class="fas fa-circle" style="font-size: 0.5rem;"></i> Proctored Active Session</span>
+                    </div>
+
+                    <div style="background: var(--bg-hover); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                            <span>Python Core & Advanced Assessment</span>
+                            <span style="font-weight: 700; color: var(--primary);"><i class="fas fa-stopwatch"></i> 42:18</span>
+                        </div>
+                        <div style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+                            <div style="width: 65%; height: 100%; background: var(--primary);"></div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; background: var(--bg-card);">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">QUESTION 7 OF 10 (2.0 MARKS)</span>
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-top: 0.35rem; color: var(--text-main);">
+                            What will be the output of the following Python expression: <code>bool([]) + bool([0])</code>?
+                        </p>
+                        <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem;">A) 0</div>
+                            <div style="padding: 0.5rem 0.75rem; border: 1.5px solid var(--primary); background: var(--primary-light); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--primary); display: flex; justify-content: space-between;">
+                                <span>B) 1</span>
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+                        <span><i class="fas fa-lock" style="color: var(--success);"></i> Fullscreen Enforced</span>
+                        <span class="badge badge-primary">Auto-Saved</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section with Animated Counters -->
+    <section class="stats-section" style="padding: 3.5rem 0; background: var(--bg-card); border-bottom: 1px solid var(--border);">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+                <div>
+                    <h2 class="counter-val" data-target="10000" style="font-size: 2.75rem; font-weight: 800; color: var(--primary);">0</h2>
+                    <p style="font-weight: 600; font-size: 0.95rem;">Active Students</p>
+                </div>
+                <div>
+                    <h2 class="counter-val" data-target="500" style="font-size: 2.75rem; font-weight: 800; color: var(--secondary);">0</h2>
+                    <p style="font-weight: 600; font-size: 0.95rem;">Scheduled Exams</p>
+                </div>
+                <div>
+                    <h2 class="counter-val" data-target="50000" style="font-size: 2.75rem; font-weight: 800; color: var(--success);">0</h2>
+                    <p style="font-weight: 600; font-size: 0.95rem;">Questions in Bank</p>
+                </div>
+                <div>
+                    <h2 style="font-size: 2.75rem; font-weight: 800; color: var(--warning);">98%</h2>
+                    <p style="font-weight: 600; font-size: 0.95rem;">System Reliability & Uptime</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6 Features Section -->
+    <section id="features" style="padding: 5rem 0;">
+        <div class="container">
+            <div style="text-align: center; max-width: 640px; margin: 0 auto 3.5rem;">
+                <span class="badge badge-primary" style="margin-bottom: 0.75rem;">Platform Capabilities</span>
+                <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem;">Everything Educational Institutions Need</h2>
+                <p style="font-size: 1rem; color: var(--text-muted);">From test design to instant credentialing, ExamPro delivers an end-to-end examination ecosystem.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                <!-- 1. Online Examinations -->
+                <div class="card" style="padding: 2rem;">
+                    <div class="stat-icon primary" style="margin-bottom: 1.25rem; width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">1. Online Examinations</h3>
+                    <p style="font-size: 0.925rem; line-height: 1.6;">
+                        Distraction-free assessment interface with dynamic question palette, countdown timer, auto-saving drafts, and multi-format questions.
+                    </p>
+                </div>
+
+                <!-- 2. Question Bank -->
+                <div class="card" style="padding: 2rem;">
+                    <div class="stat-icon indigo" style="margin-bottom: 1.25rem; width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">2. Question Bank</h3>
+                    <p style="font-size: 0.925rem; line-height: 1.6;">
+                        Centralized repository organized by subject, topic, and difficulty. Supports single MCQ, multi-select, true/false, fill-in-blanks, and CSV bulk import.
+                    </p>
+                </div>
+
+                <!-- 3. Real-Time Results -->
+                <div class="card" style="padding: 2rem;">
+                    <div class="stat-icon success" style="margin-bottom: 1.25rem; width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="fas fa-poll"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">3. Real-Time Results</h3>
+                    <p style="font-size: 0.925rem; line-height: 1.6;">
+                        Instant scorecard generation with circular percentage score gauges, question-by-question review, explanations, and downloadable ReportLab PDF cards.
+                    </p>
+                </div>
+
+                <!-- 4. Performance Analytics -->
+                <div class="card" style="padding: 2rem;">
+                    <div class="stat-icon warning" style="margin-bottom: 1.25rem; width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">4. Performance Analytics</h3>
+                    <p style="font-size: 0.925rem; line-height: 1.6;">
+                        Interactive Chart.js visualizations tracking score progression over time, topic strengths and weaknesses, accuracy rates, and time per question.
+                    </p>
+                </div>
+
+                <!-- 5. Secure Examination -->
+                <div class="card" style="padding: 2rem;">
+                    <div class="stat-icon danger" style="margin-bottom: 1.25rem; width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">5. Secure Examination</h3>
+                    <p style="font-size: 0.925rem; line-height: 1.6;">
+                        Enforced fullscreen proctoring, tab-switch and window-blur detection, copy-paste blocking, question randomization, and audit security logs.
+                    </p>
+                </div>
+
+                <!-- 6. Automated Evaluation -->
+                <div class="card" style="padding: 2rem;">
+                    <div class="stat-icon primary" style="margin-bottom: 1.25rem; width: 52px; height: 52px; font-size: 1.5rem;">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">6. Automated Evaluation</h3>
+                    <p style="font-size: 0.925rem; line-height: 1.6;">
+                        Server-side calculation including configurable negative marking penalty, grade assignment, and verified digital certificates of achievement.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works (4 Steps) -->
+    <section id="how-it-works" style="padding: 5rem 0; background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+        <div class="container">
+            <div style="text-align: center; max-width: 640px; margin: 0 auto 3.5rem;">
+                <span class="badge badge-success" style="margin-bottom: 0.75rem;">Workflow</span>
+                <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem;">How ExamPro Works</h2>
+                <p style="font-size: 1rem; color: var(--text-muted);">Four simple, seamless steps to conduct and evaluate assessments.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem;">
+                <div style="text-align: center; padding: 1.5rem;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                        1
+                    </div>
+                    <h4 style="margin-bottom: 0.5rem;">Register</h4>
+                    <p style="font-size: 0.875rem;">Create a verified student or faculty profile with your academic institution credentials.</p>
+                </div>
+
+                <div style="text-align: center; padding: 1.5rem;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--secondary-light); color: var(--secondary); font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                        2
+                    </div>
+                    <h4 style="margin-bottom: 0.5rem;">Choose Exam</h4>
+                    <p style="font-size: 0.875rem;">Browse scheduled tests, review instructions, duration limits, and syllabus guidelines.</p>
+                </div>
+
+                <div style="text-align: center; padding: 1.5rem;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--warning-light); color: var(--warning); font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                        3
+                    </div>
+                    <h4 style="margin-bottom: 0.5rem;">Take Exam</h4>
+                    <p style="font-size: 0.875rem;">Engage in our secure, distraction-free examination room with live auto-saving and timer.</p>
+                </div>
+
+                <div style="text-align: center; padding: 1.5rem;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--success-light); color: var(--success); font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                        4
+                    </div>
+                    <h4 style="margin-bottom: 0.5rem;">Analyze Results</h4>
+                    <p style="font-size: 0.875rem;">Receive instant grading, explore weak and strong topics, and download verified certificates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Role Portals Section -->
+    <section id="roles" style="padding: 5rem 0;">
+        <div class="container">
+            <div style="text-align: center; max-width: 640px; margin: 0 auto 3rem;">
+                <span class="badge badge-primary" style="margin-bottom: 0.75rem;">Role-Based Access</span>
+                <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem;">Dedicated Portals for Every Stakeholder</h2>
+                <p style="color: var(--text-muted);">Switch between customized experiences tailored for students, teachers, and administrators.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <!-- Student Portal Card -->
+                <div class="card" style="border-top: 4px solid var(--primary); padding: 2rem;">
+                    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-user-graduate" style="color: var(--primary);"></i> Student Portal</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">
+                        Take examinations, track real-time answers, view scorecards, review questions, analyze topic strengths, and download certificates.
+                    </p>
+                    <a href="{{ url_for('auth.student_login') }}" class="btn btn-outline" style="width: 100%;">
+                        Student Login <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Teacher Portal Card -->
+                <div class="card" style="border-top: 4px solid var(--secondary); padding: 2rem;">
+                    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-chalkboard-teacher" style="color: var(--secondary);"></i> Teacher Portal</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">
+                        Build multi-step examinations, manage rich question banks, bulk-import CSV question sets, and evaluate student submissions.
+                    </p>
+                    <a href="{{ url_for('auth.teacher_login') }}" class="btn btn-outline" style="width: 100%;">
+                        Teacher Login <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Admin Center Card -->
+                <div class="card" style="border-top: 4px solid var(--warning); padding: 2rem;">
+                    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-shield-alt" style="color: var(--warning);"></i> Admin Center</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">
+                        Comprehensive institution management: student and faculty rosters, system-wide analytics, security logs, and certificate registry.
+                    </p>
+                    <a href="{{ url_for('auth.admin_login') }}" class="btn btn-outline" style="width: 100%;">
+                        Admin Login <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Public Footer -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="/" class="brand-logo" style="margin-bottom: 1rem;">
+                    <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+                    <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+                </a>
+                <p style="font-size: 0.9rem; margin-bottom: 1.25rem;">
+                    The modern, secure web assessment and examination management system built for premier educational institutions.
+                </p>
+                <div style="display: flex; gap: 0.75rem; color: var(--text-muted); font-size: 1.2rem;">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="{{ url_for('result.verify_certificate', certificate_code='EXAMPRO-CERT-PY-882941') }}">Verify Certificate</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Portals</h4>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('auth.student_login') }}">Student Login</a></li>
+                    <li><a href="{{ url_for('auth.teacher_login') }}">Teacher Login</a></li>
+                    <li><a href="{{ url_for('auth.admin_login') }}">Admin Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">New Registration</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Support & Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About ExamPro</a></li>
+                    <li><a href="/contact">Help Center</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; {{ current_year }} ExamPro Enterprise Examination Management System. All rights reserved.</span>
+            <span>Academic Demonstration Project</span>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+

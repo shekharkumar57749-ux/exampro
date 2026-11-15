@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Features – ExamPro Advanced Assessment Platform{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="container site-nav">
+        <a href="/" class="brand-logo">
+            <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+        </a>
+        <div class="nav-actions">
+            <button class="theme-toggle-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+            <a href="/" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </div>
+</header>
+
+<main style="padding: 4rem 0;">
+    <div class="container">
+        <div style="text-align: center; max-width: 700px; margin: 0 auto 3.5rem;">
+            <span class="badge badge-primary" style="margin-bottom: 0.75rem;">Full Capabilities</span>
+            <h1 style="font-size: 2.75rem; font-weight: 800; margin-bottom: 1rem;">Engineered for Examination Integrity</h1>
+            <p style="font-size: 1.1rem; color: var(--text-muted);">
+                A comprehensive feature breakdown across student experience, educator tools, and administrative oversight.
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+            <div class="card" style="padding: 2rem;">
+                <div class="stat-icon primary" style="margin-bottom: 1rem;"><i class="fas fa-desktop"></i></div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Proctored Examination Room</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Full-screen enforcement, real-time countdown timer, live draft auto-save, and active question palette with 5 distinct state indicators.</p>
+            </div>
+
+            <div class="card" style="padding: 2rem;">
+                <div class="stat-icon warning" style="margin-bottom: 1rem;"><i class="fas fa-user-secret"></i></div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Anti-Cheating Sensor Suite</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Monitors window blur, tab switches, clipboard copy/paste events, and right-click context attempts, logging incident audits with timestamps.</p>
+            </div>
+
+            <div class="card" style="padding: 2rem;">
+                <div class="stat-icon success" style="margin-bottom: 1rem;"><i class="fas fa-calculator"></i></div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Automated Grading & Negative Marking</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Immediate evaluation of objective and subjective questions, precise negative penalty deductions, and letter grade allocations.</p>
+            </div>
+
+            <div class="card" style="padding: 2rem;">
+                <div class="stat-icon indigo" style="margin-bottom: 1rem;"><i class="fas fa-file-pdf"></i></div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">ReportLab PDF Generation</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Direct generation of official PDF scorecards and tamper-evident certificates with unique cryptographic verification codes.</p>
+            </div>
+
+            <div class="card" style="padding: 2rem;">
+                <div class="stat-icon primary" style="margin-bottom: 1rem;"><i class="fas fa-chart-line"></i></div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Cognitive Performance Analytics</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Interactive Chart.js visualizations tracking score evolution, topic strengths, weak areas, and time-per-question velocity.</p>
+            </div>
+
+            <div class="card" style="padding: 2rem;">
+                <div class="stat-icon success" style="margin-bottom: 1rem;"><i class="fas fa-database"></i></div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Enterprise Question Repository</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Categorization by subject, topic, and difficulty with full CSV bulk import and multi-step examination wizard creation.</p>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+

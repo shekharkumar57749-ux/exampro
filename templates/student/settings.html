@@ -1,0 +1,108 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Settings – ExamPro{% endblock %}
+{% block nav_settings %}active{% endblock %}
+
+{% block student_content %}
+<div style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.75rem; font-weight: 800;">Account & System Settings</h2>
+    <p style="color: var(--text-muted);">Manage your theme preferences, security credentials, and proctoring permissions</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Theme & Display Preferences -->
+    <div class="card" style="padding: 2rem;">
+        <h3 class="card-title" style="margin-bottom: 1.5rem;"><i class="fas fa-palette" style="color:var(--primary); margin-right:8px;"></i> Appearance & Theme</h3>
+        
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Choose your preferred interface theme. Settings persist across browser sessions.
+        </p>
+
+        <div style="display: flex; gap: 1rem;">
+            <button onclick="setTheme('light')" class="btn btn-secondary" style="flex: 1; padding: 1rem; flex-direction: column; gap: 0.5rem;">
+                <i class="fas fa-sun" style="font-size: 1.5rem; color: #f59e0b;"></i>
+                <span>Light Mode</span>
+            </button>
+
+            <button onclick="setTheme('dark')" class="btn btn-secondary" style="flex: 1; padding: 1rem; flex-direction: column; gap: 0.5rem;">
+                <i class="fas fa-moon" style="font-size: 1.5rem; color: #6366f1;"></i>
+                <span>Dark Mode</span>
+            </button>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1rem; background: var(--bg-hover); border-radius: var(--radius-md); font-size: 0.85rem;">
+            <b>Notification Preferences:</b>
+            <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <label class="form-check">
+                    <input type="checkbox" checked />
+                    <span>In-app exam schedule alerts</span>
+                </label>
+                <label class="form-check">
+                    <input type="checkbox" checked />
+                    <span>Instant result publication notices</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Password Change -->
+    <div class="card" style="padding: 2rem;">
+        <h3 class="card-title" style="margin-bottom: 1.5rem;"><i class="fas fa-lock" style="color:var(--primary); margin-right:8px;"></i> Change Password</h3>
+
+        <form id="change-password-form" onsubmit="handleChangePassword(event)">
+            <div class="form-group">
+                <label class="form-label" for="old_password">Current Password</label>
+                <input type="password" id="old_password" class="form-control" placeholder="••••••••" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="new_password">New Password</label>
+                <input type="password" id="new_password" class="form-control" placeholder="Minimum 6 characters" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirm_new_password">Confirm New Password</label>
+                <input type="password" id="confirm_new_password" class="form-control" placeholder="Re-enter new password" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem; width: 100%;">
+                <i class="fas fa-key"></i> Update Account Password
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function handleChangePassword(e) {
+        e.preventDefault();
+        const oldPwd = document.getElementById('old_password').value;
+        const newPwd = document.getElementById('new_password').value;
+        const confirmPwd = document.getElementById('confirm_new_password').value;
+
+        if (newPwd !== confirmPwd) {
+            showToast('New passwords do not match.', 'danger');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/profile/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_password: oldPwd, new_password: newPwd })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Password updated successfully!', 'success');
+                document.getElementById('change-password-form').reset();
+            } else {
+                showToast(data.error || 'Failed to update password.', 'danger');
+            }
+        } catch (err) {
+            showToast('Network error updating password.', 'danger');
+        }
+    }
+</script>
+{% endblock %}
+

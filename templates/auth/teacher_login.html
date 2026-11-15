@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Portal – ExamPro{% endblock %}
+
+{% block content %}
+<div style="min-height: 100vh; display: flex; flex-direction: column; background: var(--bg-body);">
+    <header style="padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="/" class="brand-logo">
+            <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+        </a>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <button class="theme-toggle-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+            <a href="/" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </header>
+
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
+        <div class="card" style="max-width: 460px; width: 100%; padding: 2.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); border-top: 4px solid var(--secondary);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--secondary-light); color: var(--secondary); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.35rem;">Educator Workspace</h2>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Manage your question bank, exams, and grading</p>
+            </div>
+
+            <!-- Demo Hint -->
+            <div style="margin-bottom: 1.5rem; padding: 0.75rem; background: var(--bg-hover); border-radius: var(--radius-md); font-size: 0.8rem; border-left: 3px solid var(--secondary);">
+                <b>Demo Teacher:</b> <code>teacher@exampro.com</code><br>
+                <b>Password:</b> <code>Teacher@123</code>
+            </div>
+
+            <form action="{{ url_for('auth.teacher_login') }}" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="identifier">Teacher Email or Employee ID</label>
+                    <input type="text" id="identifier" name="identifier" class="form-control" placeholder="teacher@exampro.com or TCH-101" required autofocus />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem; background: var(--secondary);">
+                    <i class="fas fa-sign-in-alt"></i> Access Teacher Workspace
+                </button>
+            </form>
+
+            <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                Switch to <a href="{{ url_for('auth.student_login') }}">Student Login</a> or <a href="{{ url_for('auth.admin_login') }}">Admin Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

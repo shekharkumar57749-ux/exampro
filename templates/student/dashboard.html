@@ -1,0 +1,191 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Student Dashboard – ExamPro{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block student_content %}
+<!-- Welcome Section -->
+<div class="welcome-banner">
+    <div class="welcome-text">
+        <h1>{{ greeting }}, {{ profile.full_name }}!</h1>
+        <p>You have enrolled in <b>{{ profile.course }}</b>. Ready for your next scheduled examination?</p>
+    </div>
+    <div>
+        <a href="{{ url_for('student.exams') }}" class="btn btn-secondary" style="background:#fff; color:var(--primary); font-weight:700;">
+            <i class="fas fa-play-circle"></i> Launch Exams
+        </a>
+    </div>
+</div>
+
+<!-- 4 Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Exams Completed</div>
+            <div class="stat-value">{{ summary.exams_completed }}</div>
+            <div class="stat-sub">Evaluated attempts</div>
+        </div>
+        <div class="stat-icon primary">
+            <i class="fas fa-file-signature"></i>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Average Score</div>
+            <div class="stat-value">{{ summary.average_percentage }}%</div>
+            <div class="stat-sub">Across all subjects</div>
+        </div>
+        <div class="stat-icon success">
+            <i class="fas fa-chart-pie"></i>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Questions Solved</div>
+            <div class="stat-value">{{ summary.total_correct + summary.total_incorrect }}</div>
+            <div class="stat-sub">{{ summary.overall_accuracy }}% accuracy</div>
+        </div>
+        <div class="stat-icon indigo">
+            <i class="fas fa-tasks"></i>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Certificates Earned</div>
+            <div class="stat-value">{{ summary.certificates_count }}</div>
+            <div class="stat-sub">Verified credentials</div>
+        </div>
+        <div class="stat-icon warning">
+            <i class="fas fa-award"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Two-Column Layout: Available Exams + Performance Chart -->
+<div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 1.75rem; margin-bottom: 2rem;">
+    <!-- Available Examinations -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-clipboard-list" style="color:var(--primary); margin-right:8px;"></i> Available Examinations</h3>
+            <a href="{{ url_for('student.exams') }}" style="font-size:0.85rem; font-weight:600;">View All ({{ available_exams|length }})</a>
+        </div>
+
+        {% if available_exams %}
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for ex in available_exams[:3] %}
+                    <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem; background: var(--bg-hover); display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <span class="exam-subject-badge">{{ ex.subject_name }}</span>
+                            <h4 style="font-size: 1.05rem; margin: 0.25rem 0;">{{ ex.title }}</h4>
+                            <div style="display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                <span><i class="far fa-clock"></i> {{ ex.duration_minutes }} mins</span>
+                                <span><i class="far fa-question-circle"></i> {{ ex.question_count }} Questions</span>
+                                <span><i class="far fa-star"></i> {{ ex.total_marks }} Marks</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            {% if ex.in_progress_attempt_id %}
+                                <a href="{{ url_for('student.take_exam', exam_id=ex.id) }}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-redo"></i> Resume Exam
+                                </a>
+                            {% elif ex.student_attempts_count >= ex.max_attempts %}
+                                <span class="badge badge-secondary">Attempt Limit Reached</span>
+                            {% else %}
+                                <a href="{{ url_for('student.take_exam', exam_id=ex.id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play"></i> Start Exam
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                <i class="far fa-calendar-check" style="font-size: 2.5rem; margin-bottom: 0.75rem;"></i>
+                <p>No active exams scheduled at the moment.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Performance Chart Widget -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-line" style="color:var(--secondary); margin-right:8px;"></i> Performance Timeline</h3>
+            <span class="badge badge-primary">Recent Exams</span>
+        </div>
+        <div class="chart-container" style="height: 250px;">
+            <canvas id="chart-student-timeline"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Examination Results Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-poll" style="color:var(--success); margin-right:8px;"></i> Recent Examination Results</h3>
+        <a href="{{ url_for('student.results') }}" style="font-size:0.85rem; font-weight:600;">Full Results History</a>
+    </div>
+
+    {% if recent_results %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Examination Name</th>
+                        <th>Subject</th>
+                        <th>Score Obtained</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in recent_results %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ res.exam_title }}</td>
+                            <td>{{ res.subject_name }}</td>
+                            <td><b>{{ res.score }}</b> / {{ res.total_marks }}</td>
+                            <td>{{ res.percentage }}%</td>
+                            <td><span class="badge badge-primary">{{ res.grade }}</span></td>
+                            <td>
+                                {% if res.status == 'pass' %}
+                                    <span class="badge badge-success"><i class="fas fa-check"></i> Passed</span>
+                                {% else %}
+                                    <span class="badge badge-danger"><i class="fas fa-times"></i> Failed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('student.result_detail', result_id=res.id) }}" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-eye"></i> View Result
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+            <i class="fas fa-graduation-cap" style="font-size: 2.5rem; margin-bottom: 0.75rem;"></i>
+            <p>You haven't completed any examinations yet.</p>
+            <a href="{{ url_for('student.exams') }}" class="btn btn-primary btn-sm" style="margin-top: 1rem;">Browse Exams</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const analyticsData = {{ analytics | tojson | safe }};
+        AnalyticsEngine.initStudentCharts(analyticsData);
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Credential – ExamPro{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="container site-nav">
+        <a href="/" class="brand-logo">
+            <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+        </a>
+        <div class="nav-actions">
+            <button class="theme-toggle-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+            <a href="/" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </div>
+</header>
+
+<main style="padding: 4rem 1rem; min-height: 80vh; display: flex; align-items: center; justify-content: center; background: var(--bg-body);">
+    <div class="card" style="max-width: 640px; width: 100%; padding: 2.5rem; text-align: center; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);">
+        {% if cert %}
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--success-light); color: var(--success); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+
+            <span class="badge badge-success" style="font-size: 0.85rem; padding: 0.35rem 0.85rem; margin-bottom: 0.75rem;">
+                <i class="fas fa-check-circle"></i> Official Academic Credential Verified
+            </span>
+
+            <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Authentic ExamPro Certificate</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.75rem;">
+                This certificate was officially issued by ExamPro Academic Assessment Board.
+            </p>
+
+            <div style="background: var(--bg-hover); padding: 1.5rem; border-radius: var(--radius-md); text-align: left; font-size: 0.95rem; margin-bottom: 2rem; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem;">
+                    <span style="color: var(--text-muted);">Recipient Name:</span>
+                    <b style="color: var(--text-main);">{{ cert.student_name }}</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem;">
+                    <span style="color: var(--text-muted);">Student ID:</span>
+                    <b>{{ cert.student_code }}</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem;">
+                    <span style="color: var(--text-muted);">Examination:</span>
+                    <b style="color: var(--primary);">{{ cert.exam_title }}</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem;">
+                    <span style="color: var(--text-muted);">Subject:</span>
+                    <b>{{ cert.subject_name }}</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem;">
+                    <span style="color: var(--text-muted);">Score & Grade:</span>
+                    <b>{{ cert.score }} / {{ cert.total_marks }} ({{ cert.result_percentage }}%) – Grade {{ cert.grade }}</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.65rem;">
+                    <span style="color: var(--text-muted);">Issue Date:</span>
+                    <b>{{ cert.issue_date }}</b>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Verification Code:</span>
+                    <code style="color: var(--primary); font-weight: 700;">{{ cert.certificate_code }}</code>
+                </div>
+            </div>
+
+            <a href="{{ url_for('result.download_certificate', result_id=cert.result_id) }}" class="btn btn-primary" style="margin-right: 0.5rem;">
+                <i class="fas fa-download"></i> Download Verified PDF
+            </a>
+            <a href="/" class="btn btn-secondary">Return Home</a>
+
+        {% else %}
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--danger-light); color: var(--danger); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Verification Not Found</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                The credential with code <code>{{ code }}</code> could not be located in our registry or may have been revoked.
+            </p>
+
+            <form onsubmit="event.preventDefault(); location.href='/verify-certificate/' + document.getElementById('search-code').value.trim();" style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
+                <input type="text" id="search-code" class="form-control" placeholder="Enter Certificate Code..." style="max-width: 320px;" required />
+                <button type="submit" class="btn btn-primary">Verify</button>
+            </form>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+

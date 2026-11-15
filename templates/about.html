@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}About ExamPro – Advanced Examination Management System{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="container site-nav">
+        <a href="/" class="brand-logo">
+            <span class="brand-icon"><i class="fas fa-graduation-cap"></i></span>
+            <span>Exam<span style="color:var(--secondary)">Pro</span></span>
+        </a>
+        <div class="nav-actions">
+            <button class="theme-toggle-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+            <a href="/" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </div>
+</header>
+
+<main style="padding: 4rem 0;">
+    <div class="container" style="max-width: 900px;">
+        <span class="badge badge-primary" style="margin-bottom: 0.75rem;">About ExamPro</span>
+        <h1 style="font-size: 2.75rem; font-weight: 800; margin-bottom: 1.25rem;">Transforming Academic Examination Systems</h1>
+        <p style="font-size: 1.15rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 2.5rem;">
+            ExamPro is a modern, responsive, and robust examination management system developed for colleges, universities, and professional testing bodies. It replaces legacy manual testing procedures with automated proctoring, multi-format evaluations, and instant result analytics.
+        </p>
+
+        <div class="card" style="padding: 2.5rem; margin-bottom: 2.5rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Core Architecture & Stack</h2>
+            <p style="margin-bottom: 1.5rem; line-height: 1.6;">
+                Built on modern web foundations with zero unnecessary bloatware:
+            </p>
+            <ul style="padding-left: 1.5rem; line-height: 2; color: var(--text-muted);">
+                <li><b>Frontend:</b> Semantic HTML5, CSS3 Variables with Light/Dark Themes, Vanilla JavaScript DOM Engine, and Chart.js.</li>
+                <li><b>Backend:</b> Python Flask with Blueprint modularity and Werkzeug cryptographic password hashing.</li>
+                <li><b>Database:</b> Relational MySQL 8.0 schema with foreign key integrity and ACID transactions, with an auto-fallback SQLite engine.</li>
+                <li><b>Document Generation:</b> ReportLab PDF engine for high-resolution result scorecards and certificates.</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{{ url_for('auth.student_login') }}" class="btn btn-primary btn-lg">Experience ExamPro Today</a>
+        </div>
+    </div>
+</main>
+{% endblock %}
+

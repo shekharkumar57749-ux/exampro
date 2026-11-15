@@ -1,0 +1,152 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Manage Students – ExamPro{% endblock %}
+{% block nav_students %}active{% endblock %}
+
+{% block admin_content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+    <div>
+        <h2 style="font-size:1.75rem; font-weight:800;">Student Roster & Verification</h2>
+        <p style="color:var(--text-muted);">Manage candidate accounts, access privileges, and academic status</p>
+    </div>
+    <button onclick="openModal('add-student-modal')" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Add New Student
+    </button>
+</div>
+
+<!-- Search & Filters Bar -->
+<div class="card" style="margin-bottom:1.5rem; padding:1.25rem;">
+    <form method="GET" action="{{ url_for('admin.students') }}" style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1; min-width:240px;">
+            <input type="text" name="search" class="form-control" placeholder="Search by student name, ID, or email..." value="{{ search_query or '' }}" />
+        </div>
+        <div style="width:180px;">
+            <select name="status" class="form-control">
+                <option value="all">All Statuses</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+                <option value="disabled" {% if status_filter == 'disabled' %}selected{% endif %}>Disabled Only</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        <a href="{{ url_for('admin.students') }}" class="btn btn-secondary" title="Clear Filters"><i class="fas fa-undo"></i></a>
+    </form>
+</div>
+
+<!-- Students Table -->
+<div class="card">
+    {% if students %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Candidate Name</th>
+                        <th>Student ID</th>
+                        <th>Email</th>
+                        <th>Course / Program</th>
+                        <th>Exams Done</th>
+                        <th>Avg Score</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stu in students %}
+                        <tr>
+                            <td style="font-weight:700;">{{ stu.full_name }}</td>
+                            <td><code style="color:var(--primary);">{{ stu.student_id }}</code></td>
+                            <td>{{ stu.email }}</td>
+                            <td>{{ stu.course }}</td>
+                            <td><b>{{ stu.exams_completed }}</b></td>
+                            <td>
+                                {% if stu.avg_score is not none %}
+                                    <b>{{ stu.avg_score }}%</b>
+                                {% else %}
+                                    <span style="color:var(--text-muted);">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if stu.status == 'active' %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Disabled</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:right;">
+                                <form action="{{ url_for('admin.user_toggle_status', user_id=stu.user_id) }}" method="POST" style="display:inline;">
+                                    {% if stu.status == 'active' %}
+                                        <input type="hidden" name="status" value="disabled" />
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Disable Account" onclick="return confirm('Deactivate student account?');">
+                                            <i class="fas fa-user-slash"></i> Disable
+                                        </button>
+                                    {% else %}
+                                        <input type="hidden" name="status" value="active" />
+                                        <button type="submit" class="btn btn-success btn-sm" title="Reactivate Account">
+                                            <i class="fas fa-user-check"></i> Activate
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align:center; padding:3.5rem 1rem; color:var(--text-muted);">
+            <i class="fas fa-users-slash" style="font-size:3rem; margin-bottom:1rem;"></i>
+            <h3>No Students Found</h3>
+            <p>No student accounts match the search criteria.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Modal: Add Student -->
+<div id="add-student-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:600px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-user-plus" style="color:var(--primary); margin-right:8px;"></i> Add Student Account</h3>
+            <button class="alert-close" onclick="closeModal('add-student-modal')">&times;</button>
+        </div>
+        <form action="{{ url_for('admin.student_create') }}" method="POST">
+            <div class="modal-body">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="full_name" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Student ID *</label>
+                        <input type="text" name="student_id" class="form-control" placeholder="STU-1004" required />
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" name="email" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" name="phone" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Course / Program</label>
+                    <input type="text" name="course" class="form-control" value="B.Tech Computer Science & Engineering" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Temporary Password</label>
+                    <input type="password" name="password" class="form-control" value="Student@123" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('add-student-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

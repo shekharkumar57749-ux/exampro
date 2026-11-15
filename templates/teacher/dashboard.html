@@ -1,0 +1,110 @@
+{% extends "teacher/teacher_base.html" %}
+
+{% block title %}Teacher Dashboard – ExamPro{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block teacher_content %}
+<div class="welcome-banner" style="background: linear-gradient(135deg, var(--secondary) 0%, #312e81 100%);">
+    <div class="welcome-text">
+        <h1>Welcome back, {{ user_name }}!</h1>
+        <p>Manage curriculum question banks, schedule assessments, and evaluate student submissions in real time.</p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+        <a href="{{ url_for('teacher.exam_create') }}" class="btn btn-secondary" style="background:#fff; color:var(--secondary); font-weight:700;">
+            <i class="fas fa-plus-circle"></i> Create New Exam
+        </a>
+    </div>
+</div>
+
+<!-- Educator KPIs -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">My Created Exams</div>
+            <div class="stat-value">{{ stats.my_exams }}</div>
+            <div class="stat-sub">Active tests</div>
+        </div>
+        <div class="stat-icon indigo"><i class="fas fa-file-alt"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Questions in Bank</div>
+            <div class="stat-value">{{ stats.my_questions }}</div>
+            <div class="stat-sub">Multi-format items</div>
+        </div>
+        <div class="stat-icon primary"><i class="fas fa-layer-group"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Submissions Evaluated</div>
+            <div class="stat-value">{{ stats.submissions_count }}</div>
+            <div class="stat-sub">Student attempts</div>
+        </div>
+        <div class="stat-icon success"><i class="fas fa-users-cog"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <div class="stat-label">Average Student Score</div>
+            <div class="stat-value">{{ stats.avg_class_score }}%</div>
+            <div class="stat-sub">Across my assessments</div>
+        </div>
+        <div class="stat-icon warning"><i class="fas fa-chart-line"></i></div>
+    </div>
+</div>
+
+<!-- Recent Submissions Table -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-poll" style="color:var(--secondary); margin-right:8px;"></i> Recent Student Submissions</h3>
+        <a href="{{ url_for('teacher.results') }}" style="font-size:0.85rem; font-weight:600;">View All Submissions</a>
+    </div>
+
+    {% if recent_submissions %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Student ID</th>
+                        <th>Exam</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th>Submitted At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in recent_submissions %}
+                        <tr>
+                            <td style="font-weight:700;">{{ sub.student_name }}</td>
+                            <td>{{ sub.student_code }}</td>
+                            <td>{{ sub.exam_title }}</td>
+                            <td><b>{{ sub.score }}</b> / {{ sub.total_marks }}</td>
+                            <td>{{ sub.percentage }}%</td>
+                            <td><span class="badge badge-primary">{{ sub.grade }}</span></td>
+                            <td>
+                                {% if sub.status == 'pass' %}
+                                    <span class="badge badge-success">Passed</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Failed</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ sub.published_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align:center; padding:3rem 1rem; color:var(--text-muted);">
+            <i class="far fa-clock" style="font-size:2.5rem; margin-bottom:0.75rem;"></i>
+            <p>No student submissions received yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

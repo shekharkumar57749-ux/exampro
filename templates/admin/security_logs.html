@@ -1,0 +1,76 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Security & Proctoring Audit Logs – ExamPro{% endblock %}
+{% block nav_security_logs %}active{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom:2rem;">
+    <h2 style="font-size:1.75rem; font-weight:800;">Examination Security & Proctoring Logs</h2>
+    <p style="color:var(--text-muted);">Real-time violation tracking, tab-switch incidents, and anti-cheating alerts</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-shield-virus" style="color:var(--danger); margin-right:8px;"></i> Incident Trail ({{ logs|length }} Events)</h3>
+        <span class="badge badge-danger">Live Proctoring Watch</span>
+    </div>
+
+    {% if logs %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Candidate</th>
+                        <th>Student ID</th>
+                        <th>Examination</th>
+                        <th>Incident Type</th>
+                        <th>Details</th>
+                        <th>Severity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                        <tr>
+                            <td style="font-family:var(--font-mono); font-size:0.8rem;">{{ log.created_at }}</td>
+                            <td style="font-weight:700;">{{ log.student_name }}</td>
+                            <td><code>{{ log.student_code }}</code></td>
+                            <td>{{ log.exam_title }}</td>
+                            <td>
+                                {% if log.event_type == 'tab_switch' %}
+                                    <span class="badge badge-warning"><i class="fas fa-window-restore"></i> Tab Switch</span>
+                                {% elif log.event_type == 'copy_paste' %}
+                                    <span class="badge badge-danger"><i class="fas fa-paste"></i> Copy/Paste Attempt</span>
+                                {% elif log.event_type == 'right_click' %}
+                                    <span class="badge badge-secondary"><i class="fas fa-mouse"></i> Right Click</span>
+                                {% elif log.event_type == 'fullscreen_exit' %}
+                                    <span class="badge badge-danger"><i class="fas fa-compress"></i> Exited Fullscreen</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">{{ log.event_type }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size:0.85rem; color:var(--text-muted);">{{ log.details }}</td>
+                            <td>
+                                {% if log.severity == 'high' %}
+                                    <span class="badge badge-danger">High Alert</span>
+                                {% elif log.severity == 'medium' %}
+                                    <span class="badge badge-warning">Medium</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Low</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align:center; padding:3.5rem; color:var(--text-muted);">
+            <i class="fas fa-user-shield" style="font-size:3rem; margin-bottom:1rem; color:var(--success);"></i>
+            <h3>No Security Violations Recorded</h3>
+            <p>All active test sessions have complied with integrity rules.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

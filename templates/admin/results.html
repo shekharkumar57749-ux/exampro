@@ -1,0 +1,69 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Results Archive – Admin Center{% endblock %}
+{% block nav_results %}active{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom:2rem;">
+    <h2 style="font-size:1.75rem; font-weight:800;">Global Results Archive</h2>
+    <p style="color:var(--text-muted);">Historical records of all examinations completed across the institution</p>
+</div>
+
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; gap:1rem; flex-wrap:wrap;">
+        <div style="position:relative; width:320px;">
+            <input type="text" class="form-control table-search-input" data-table="admin-results-table" placeholder="Filter by candidate, exam, or roll no..." />
+        </div>
+    </div>
+
+    {% if results %}
+        <div class="table-responsive">
+            <table id="admin-results-table" class="data-table">
+                <thead>
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Student ID</th>
+                        <th>Exam Title</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th>Completion Date</th>
+                        <th style="text-align:right;">PDF Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                        <tr>
+                            <td style="font-weight:700;">{{ r.student_name }}</td>
+                            <td><code>{{ r.student_code }}</code></td>
+                            <td>{{ r.exam_title }}</td>
+                            <td><b>{{ r.score }}</b> / {{ r.total_marks }}</td>
+                            <td>{{ r.percentage }}%</td>
+                            <td><span class="badge badge-primary">{{ r.grade }}</span></td>
+                            <td>
+                                {% if r.status == 'pass' %}
+                                    <span class="badge badge-success">Passed</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Failed</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ r.published_at }}</td>
+                            <td style="text-align:right;">
+                                <a href="{{ url_for('result.download_result_pdf', result_id=r.id) }}" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-file-pdf"></i> Scorecard
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align:center; padding:3.5rem; color:var(--text-muted);">
+            <p>No results records found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,65 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}My Certificates – ExamPro{% endblock %}
+{% block nav_certificates %}active{% endblock %}
+
+{% block student_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.75rem; font-weight: 800;">Verified Certificates of Achievement</h2>
+        <p style="color: var(--text-muted);">Digital credentials earned through successful examination completion</p>
+    </div>
+</div>
+
+{% if certificates %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
+        {% for cert in certificates %}
+            <div class="card" style="border-top: 4px solid var(--primary); padding: 1.75rem; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <span class="badge badge-success"><i class="fas fa-check-circle"></i> Authenticated</span>
+                </div>
+
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">{{ cert.exam_title }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Subject: {{ cert.subject_name }}</p>
+
+                <div style="background: var(--bg-hover); padding: 0.85rem; border-radius: var(--radius-md); font-size: 0.825rem; margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span>Grade Awarded:</span>
+                        <b>{{ cert.grade }} ({{ cert.percentage }}%)</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span>Issue Date:</span>
+                        <b>{{ cert.issue_date }}</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Verification ID:</span>
+                        <code style="color: var(--primary);">{{ cert.certificate_code }}</code>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem;">
+                    <a href="{{ url_for('result.download_certificate', result_id=cert.result_id) }}" class="btn btn-primary btn-sm" style="flex: 1;">
+                        <i class="fas fa-download"></i> Download PDF
+                    </a>
+                    <a href="{{ url_for('result.verify_certificate', certificate_code=cert.certificate_code) }}" target="_blank" class="btn btn-outline btn-sm" title="Verify Online">
+                        <i class="fas fa-shield-alt"></i> Verify
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+        <i class="fas fa-certificate" style="font-size: 3rem; margin-bottom: 1rem; color: var(--warning);"></i>
+        <h3>No Certificates Earned Yet</h3>
+        <p style="max-width: 480px; margin: 0.5rem auto 1.5rem;">
+            Complete scheduled examinations with a passing grade to automatically unlock your official certificates of achievement.
+        </p>
+        <a href="{{ url_for('student.exams') }}" class="btn btn-primary btn-sm">Explore Examinations</a>
+    </div>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,101 @@
+{% extends "teacher/teacher_base.html" %}
+
+{% block title %}Manage Examinations – ExamPro{% endblock %}
+{% block nav_exams %}active{% endblock %}
+
+{% block teacher_content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+    <div>
+        <h2 style="font-size:1.75rem; font-weight:800;">My Created Examinations</h2>
+        <p style="color:var(--text-muted);">Author, schedule, and monitor online tests</p>
+    </div>
+    <a href="{{ url_for('teacher.exam_create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create Examination
+    </a>
+</div>
+
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; gap:1rem; flex-wrap:wrap;">
+        <div style="position:relative; width:300px;">
+            <input type="text" class="form-control table-search-input" data-table="teacher-exams-table" placeholder="Filter exams by title or code..." />
+        </div>
+    </div>
+
+    {% if exams %}
+        <div class="table-responsive">
+            <table id="teacher-exams-table" class="data-table">
+                <thead>
+                    <tr>
+                        <th>Exam Title</th>
+                        <th>Subject</th>
+                        <th>Duration</th>
+                        <th>Questions</th>
+                        <th>Total Marks</th>
+                        <th>Passing %</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ex in exams %}
+                        <tr>
+                            <td style="font-weight:700;">
+                                <div>{{ ex.title }}</div>
+                                <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">{{ ex.exam_code }}</span>
+                            </td>
+                            <td>{{ ex.subject_name }}</td>
+                            <td>{{ ex.duration_minutes }} mins</td>
+                            <td><b>{{ ex.total_questions }}</b></td>
+                            <td>{{ ex.total_marks }}</td>
+                            <td>{{ ex.passing_percentage }}%</td>
+                            <td>
+                                {% if ex.status == 'active' %}
+                                    <span class="badge badge-success">Active</span>
+                                {% elif ex.status == 'draft' %}
+                                    <span class="badge badge-secondary">Draft</span>
+                                {% else %}
+                                    <span class="badge badge-warning">{{ ex.status|capitalize }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:right;">
+                                <div style="display:inline-flex; gap:0.5rem;">
+                                    <button onclick="deleteExam({{ ex.id }})" class="btn btn-danger btn-sm" title="Delete Exam">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align:center; padding:3rem 1rem; color:var(--text-muted);">
+            <i class="far fa-file-alt" style="font-size:3rem; margin-bottom:1rem;"></i>
+            <h3>No Exams Created Yet</h3>
+            <p>Click "Create Examination" to assemble your first proctored exam.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function deleteExam(examId) {
+        if (!confirm('Are you sure you want to delete this examination and all its linked questions?')) return;
+        try {
+            const res = await fetch(`/api/exams/${examId}/delete`, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Exam deleted successfully.', 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(data.error || 'Failed to delete exam.', 'danger');
+            }
+        } catch (e) {
+            showToast('Error deleting exam.', 'danger');
+        }
+    }
+</script>
+{% endblock %}
+
