@@ -14,7 +14,10 @@ ENV/
 
 # Local database instances & executables
 ngrok.exe
+*.exe
+*.old
 start_exampro.bat
+push_to_github.bat
 *.sqlite
 *.log
 
